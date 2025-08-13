@@ -16,11 +16,5 @@ PoB mengukur kemampuan node berdasarkan kecepatan dan stabilitas koneksi interne
 Teknis Proof of History (PoH)
 PoH digunakan untuk mencatat urutan dan waktu transaksi dengan sangat akurat. Ini memastikan semua node memiliki urutan transaksi yang sama sebelum divalidasi oleh konsensus PoB. PoH memberikan efisiensi dalam sinkronisasi antar-node, mengurangi konflik fork, dan meningkatkan throughput jaringan.
 
-Tokenomics
-Total suplai awal RNR adalah 1 miliar token. Reward blok awal adalah 10 RNR per blok dan akan berkurang 10% setiap 1 juta blok. Pembagian reward: 60% untuk penemu blok, 30% untuk validator PoB terbaik, dan 10% untuk dana pengembangan ekosistem. Tidak ada inflasi setelah suplai maksimal tercapai.
-
-Governance
-RNR-30 menggunakan model DAO (Decentralized Autonomous Organization) untuk pengambilan keputusan. Pemegang token dapat mengajukan proposal dan memberikan suara untuk perubahan protokol, pembaruan teknis, dan penggunaan dana ekosistem. Sistem voting berbasis proporsional memastikan setiap suara sebanding dengan jumlah token yang dimiliki, namun dengan mekanisme anti-whale untuk mencegah dominasi tunggal.
-
 Penutup
 RNR-30 adalah solusi blockchain masa depan yang memadukan efisiensi energi, kecepatan, keamanan, dan desentralisasi. Dengan Proof of Bandwidth dan Proof of History, RNR-30 memberikan pendekatan baru terhadap konsensus yang lebih adil, ramah lingkungan, dan siap untuk mendukung aplikasi terdesentralisasi skala besar.
