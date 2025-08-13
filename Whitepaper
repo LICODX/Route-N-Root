@@ -1,0 +1,148 @@
+ROUTE N ROOT (RNR-30)
+Layer 1 Blockchain — Proof of Bandwidth + Proof of History
+
+1. Pendahuluan
+Route N Root (RNR-30) adalah blockchain Layer 1 dengan algoritma konsensus RNR-30, gabungan Proof of Bandwidth (PoB) dan Proof of History (PoH).
+Angka “30” menunjukkan waktu blok konstan 30 detik.
+
+Berbeda dari Proof of Work (PoW) yang mengandalkan CPU/GPU, RNR-30 memanfaatkan bandwidth internet validator sebagai sumber daya validasi utama, membuatnya:
+- Hemat energi
+- Ramah lingkungan
+- Tahan terhadap serangan DDoS berbasis traffic
+
+2. Mekanisme Konsensus — Algoritma RNR-30
+
+2.1 Proof of Bandwidth (PoB)
+Tujuan: Memastikan validator memiliki koneksi internet cepat, stabil, dan dapat diandalkan.
+
+Metrik yang diukur:
+- Latensi ≤ 40 ms → 1 poin
+- Upload ≥ 7 MB/s → 1 poin
+- Packet loss ≤ 0.1% → 1 poin
+
+Pengolahan data:
+1. Kalman Filter → mengurangi noise dari nilai mentah.
+2. Exponential Moving Average (EMA) → melicinkan hasil agar stabil.
+
+Skor PoB:
+Skor = (poin latensi + poin upload + poin packet_loss) ÷ 3
+Validator sah jika skor ≥ 0.85.
+
+Aturan Node Baru:
+- Harus membayar bandwidth setara 6 jam kapasitas validator pembuat blok.
+- Pembayaran diverifikasi dengan mengirim data dummy ke beberapa validator aktif.
+- Uji ini juga memeriksa kapasitas peer penerima (uji dua arah).
+
+2.2 Proof of History (PoH)
+PoH mencatat timestamp dan urutan transaksi secara kriptografis di header blok.
+Manfaat:
+- Memastikan urutan transaksi valid tanpa harus memeriksa semua blok sebelumnya.
+- Mempercepat finalitas — bahkan 1 blok bisa menjadi final jika tidak ada fork.
+
+2.3 Propagasi Blok dalam Waktu 30 Detik
+Pembagian waktu (30 detik):
+- 10 detik → propagasi blok ke ≥85% node.
+- 15 detik → verifikasi penuh di node penerima.
+- 5 detik → buffer toleransi keterlambatan.
+
+Kewajiban penemu blok:
+- Menyiarkan blok ≤ 1 detik setelah dibuat.
+- Ukuran blok ≤ kapasitas maksimum (lihat §5).
+- Target propagasi: ≥85% node menerima blok ≤ 10 detik.
+
+Kewajiban penerima blok:
+- Verifikasi cepat: tanda tangan, PoH sequence, header, skor PoB.
+- Re-broadcast ke peer lain ≤ 1 detik setelah verifikasi cepat.
+- Lanjutkan verifikasi penuh secara paralel.
+
+Pengukuran kepatuhan:
+PoH mencatat waktu pembuatan, penerimaan, dan penyiaran ulang. Jeda > 2 detik dihitung sebagai pelanggaran propagasi.
+
+3. Resolusi Fork & Nasib Transaksi
+- Pilih rantai dengan bobot PoB kumulatif terbesar (Σ difficulty_target).
+- Jika bobot sama → rantai dengan timestamp PoH terkecil.
+- Jika masih sama → rantai dengan hash blok terkecil.
+- Transaksi valid dari blok kalah (uncle/ommer) dikembalikan ke mempool.
+
+4. Tokenomics
+Reward awal: 100 RNR/blok
+Pengurangan reward: setiap 1.000.000 blok → berkurang 1 RNR, minimum 1 RNR selamanya.
+
+Rumus matematis:
+R(h) = max(1, 100 - floor((h - 1) / 1,000,000))
+
+Contoh:
+- Blok 1 – 1.000.000 → 100 RNR/blok
+- Blok 1.000.001 – 2.000.000 → 99 RNR/blok
+- Blok 2.000.001 – 3.000.000 → 98 RNR/blok
+- … hingga minimum 1 RNR/blok.
+
+Distribusi reward:
+- 70% → penemu blok.
+- 30% → hingga 50 node penyumbang PoB proof terbesar (berdasarkan jumlah measurement valid), dibagi rata.
+  - Jika penyumbang valid < 50 → dibagi rata ke semua.
+  - Urutan tie → validator_id naik, lalu hash signature naik.
+  - Pembayaran dibulatkan 8 desimal (floor), sisa pecahan → dibakar.
+
+Fee:
+- Minimal fee = 0.0001% × nilai transaksi, dibulatkan ke atas (ceil) ke 8 desimal.
+- Base Fee dibakar.
+- Priority Fee diberikan ke penemu blok.
+- Transaksi besar → tambahan biaya bytes × rate_per_byte.
+
+5. Batasan Transaksi & Kapasitas Blok
+Kapasitas maksimum blok:
+= 30% × Upload_PoB_validator (MB/s) × 10 detik
+- Upload_PoB_validator = kecepatan unggah terukur di PoB proof.
+- Dirancang agar ≥85% node menerima blok ≤ 10 detik.
+
+Batas transaksi khusus:
+- Maksimal 15 transaksi pembuatan wallet per blok.
+
+Penalti kapasitas:
+1. Pelanggaran ke-1 → node ditandai.
+2. Pelanggaran ke-2 → status validator turun, bayar bandwidth 1 jam.
+3. Pelanggaran ke-3 → mendaftar ulang, bayar bandwidth 6 jam.
+
+6. Tata Kelola (Governance)
+- 1 node = 1 vote.
+- Voting dilakukan on-chain.
+- Keputusan berlaku jika mayoritas mutlak (≥51%) dari validator aktif setuju.
+
+7. Penalti
+- Pelanggaran ukuran blok → sanksi sesuai §5.
+- Node lambat menyiarkan → reputasi turun.
+- Proof palsu → pemotongan reward, reputasi turun, ban sementara/permanen.
+
+8. Parameter Awal
+Parameter                  | Nilai
+---------------------------|------------------------------
+Block time                 | 30 detik
+Target propagasi           | ≥85% node dalam ≤10 detik
+Retarget PoB               | 100 blok
+Min pengukuran PoB         | 3 peer
+Sampling peer              | 5 peer
+Skor PoB minimal           | 0.85
+Clamp difficulty           | ±20%/window
+Batas wallet/block         | 15
+Top penyumbang reward PoB  | 50 node
+
+Lampiran A — Spesifikasi Teknis PoB
+Pengambilan sampel:
+- N_sample pengukuran ke M_peer terpilih pseudo-acak.
+- Diukur: latensi (ms), upload (MB/s), packet loss (%).
+
+Noise reduction — Kalman filter:
+x_est(t) = x_est(t-1) + K(t) * (z(t) - x_est(t-1))
+K(t) = P(t-1) / (P(t-1) + R)
+P(t) = (1 - K(t)) * P(t-1) + Q
+
+Smoothing — EMA:
+EMA_t = α × Value_t + (1 - α) × EMA_(t-1)
+α default = 0.3
+
+Scoring:
+- Latensi ≤ 40 ms → 1 poin
+- Upload ≥ 7 MB/s → 1 poin
+- Packet loss ≤ 0.1% → 1 poin
+- Skor akhir = total poin ÷ 3
