@@ -2,13 +2,22 @@ ROUTE N ROOT (RNR-30)
 Layer 1 Blockchain — Proof of Bandwidth + Proof of History
 
 1. Pendahuluan
-Route N Root (RNR-30) adalah blockchain Layer 1 dengan algoritma konsensus RNR-30, gabungan Proof of Bandwidth (PoB) dan Proof of History (PoH).
-Angka “30” menunjukkan waktu blok konstan 30 detik.
+Route N Root (RNR-30) adalah blockchain Layer 1 generasi baru yang menggabungkan dua pendekatan unik: Proof of Bandwidth (PoB) dan Proof of History (PoH) dalam satu algoritma konsensus. Angka “30” merepresentasikan waktu blok konstan 30 detik yang telah dioptimalkan untuk kecepatan propagasi, keamanan, dan stabilitas jaringan.
 
-Berbeda dari Proof of Work (PoW) yang mengandalkan CPU/GPU, RNR-30 memanfaatkan bandwidth internet validator sebagai sumber daya validasi utama, membuatnya:
-- Hemat energi
-- Ramah lingkungan
-- Tahan terhadap serangan DDoS berbasis traffic
+Lahir dari kebutuhan akan infrastruktur blockchain yang hemat energi, ramah lingkungan, dan tidak lagi bergantung pada kekuatan komputasi besar, RNR-30 memanfaatkan bandwidth internet sebagai sumber daya validasi utama. Dengan demikian, siapa pun dengan koneksi internet berkualitas dapat menjadi validator, tanpa harus menginvestasikan perangkat keras mahal atau mengonsumsi energi berlebihan.
+
+RNR-30 dirancang untuk menjawab tantangan utama ekosistem blockchain saat ini:
+
+Efisiensi energi: mengurangi konsumsi listrik dibanding PoW.
+
+Desentralisasi partisipasi: membuka peluang bagi validator dari berbagai wilayah.
+
+Ketahanan serangan: arsitektur PoB yang tahan terhadap serangan DDoS berbasis traffic.
+
+Finalitas cepat: PoH memastikan urutan transaksi yang akurat dan meminimalkan risiko fork.
+
+
+Dengan kombinasi inovasi teknis ini, RNR-30 menghadirkan platform blockchain yang cepat, aman, dan berkelanjutan, siap mendukung berbagai aplikasi terdesentralisasi di masa depan.
 
 2. Mekanisme Konsensus — Algoritma RNR-30
 
