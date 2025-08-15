@@ -31,9 +31,10 @@ Berbeda dengan Proof of Work (PoW) yang bergantung pada kekuatan komputasi dan P
 4. **Perhitungan skor** — skor akhir = jumlah poin valid / 3.  
    Validator sah jika **skor ≥ 0.85**.
 
-**Aturan node baru:**
-- Wajib "membayar" bandwidth setara 6 jam kapasitas validator pembuat blok.
-- Verifikasi dilakukan dengan mengirim data uji ke beberapa validator aktif dan mencatat hasilnya.
+**Aturan Node Baru:**
+- Wajib “membayar” bandwidth setara 6 jam kapasitas validator pembuat blok.
+- Pembayaran diverifikasi dengan mengirim data dummy ke beberapa validator aktif.
+- Uji ini juga memeriksa kapasitas peer penerima (uji dua arah).
 
 ---
 
