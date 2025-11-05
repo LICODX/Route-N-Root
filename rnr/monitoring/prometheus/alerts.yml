@@ -1,0 +1,279 @@
+groups:
+  - name: rnr_blockchain_critical
+    interval: 30s
+    rules:
+      - alert: BlockchainHalted
+        expr: rate(rnr_blockchain_height[5m]) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Blockchain block production halted"
+          description: "No new blocks produced in the last 5 minutes. Chain height: {{ $value }}"
+
+      - alert: ConsensusFailure
+        expr: rnr_consensus_active_validators < 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Consensus has no active validators"
+          description: "Active validator count dropped to {{ $value }}. Consensus cannot progress."
+
+      - alert: ForkDetected
+        expr: increase(rnr_consensus_fork_resolutions_total[5m]) > 3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Multiple fork resolutions detected"
+          description: "{{ $value }} fork resolutions in last 5 minutes. Network may be unstable."
+
+      - alert: DatabaseError
+        expr: increase(rnr_database_errors_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database errors detected"
+          description: "{{ $value }} database errors in last 5 minutes."
+
+  - name: rnr_performance
+    interval: 1m
+    rules:
+      - alert: HighMempoolSize
+        expr: rnr_blockchain_mempool_size > 10000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Mempool size is very high"
+          description: "Mempool contains {{ $value }} transactions. Consider capacity increase."
+
+      - alert: LowThroughput
+        expr: rate(rnr_blockchain_transactions_total[5m]) < 50
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Transaction throughput is low"
+          description: "TPS is {{ $value }}, below expected 50 TPS threshold."
+
+      - alert: HighDatabaseLatency
+        expr: histogram_quantile(0.95, rate(rnr_database_operation_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Database latency is high"
+          description: "P95 database latency is {{ $value }}s, above 1s threshold."
+
+      - alert: MemoryPressure
+        expr: (process_resident_memory_bytes / 1024 / 1024 / 1024) > 4
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value }}GB, above 4GB threshold."
+
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[1m]) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage is high"
+          description: "CPU usage is {{ $value }}%, above 80% threshold."
+
+      - alert: GoroutineLeak
+        expr: go_goroutines > 10000
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Potential goroutine leak detected"
+          description: "Goroutine count is {{ $value }}, above 10000 threshold."
+
+  - name: rnr_network
+    interval: 1m
+    rules:
+      - alert: LowPeerCount
+        expr: rnr_p2p_peers_connected < 3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low peer count"
+          description: "Only {{ $value }} peers connected. Network connectivity may be degraded."
+
+      - alert: NoPeersConnected
+        expr: rnr_p2p_peers_connected == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No peers connected"
+          description: "Node is isolated from the network."
+
+      - alert: HighBandwidthUsage
+        expr: rate(rnr_network_bytes_sent[1m]) / 1024 / 1024 > 50
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High bandwidth usage"
+          description: "Upload bandwidth is {{ $value }} MB/s, above 50 MB/s threshold."
+
+      - alert: NetworkLatencyHigh
+        expr: rnr_network_latency_ms > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Network latency is high"
+          description: "Network latency is {{ $value }}ms, above 100ms threshold."
+
+      - alert: PacketLossDetected
+        expr: rnr_network_packet_loss_percent > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Packet loss detected"
+          description: "Packet loss is {{ $value }}%, above 0.1% threshold."
+
+  - name: rnr_security
+    interval: 30s
+    rules:
+      - alert: ByzantineAttackDetected
+        expr: increase(rnr_security_byzantine_detected_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Byzantine attack detected"
+          description: "{{ $value }} Byzantine behaviors detected in last 5 minutes."
+
+      - alert: HighSecurityViolations
+        expr: increase(rnr_security_violations_total[5m]) > 50
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High number of security violations"
+          description: "{{ $value }} security violations in last 5 minutes."
+
+      - alert: ManyBlacklistedIPs
+        expr: rnr_security_blacklisted_ips > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Many IPs blacklisted"
+          description: "{{ $value }} IPs are blacklisted. Possible attack in progress."
+
+      - alert: DRDoSAttack
+        expr: increase(rnr_security_drdos_blocked_total[1m]) > 100
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Potential DRDoS attack"
+          description: "{{ $value }} DRDoS attempts blocked in last minute."
+
+      - alert: VRFManipulationDetected
+        expr: increase(rnr_security_vrf_manipulation_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "VRF manipulation detected"
+          description: "{{ $value }} VRF manipulation attempts detected."
+
+  - name: rnr_consensus
+    interval: 1m
+    rules:
+      - alert: LowValidatorCount
+        expr: rnr_consensus_active_validators < 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low active validator count"
+          description: "Only {{ $value }} active validators. Decentralization at risk."
+
+      - alert: PoBScoreDegraded
+        expr: avg(rnr_consensus_pob_score) < 0.7
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Average PoB score is low"
+          description: "Average PoB score is {{ $value }}, below 0.7 threshold."
+
+      - alert: ObserverQueueBacklog
+        expr: rnr_consensus_observer_validators > 50
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Large observer queue backlog"
+          description: "{{ $value }} validators waiting in observer mode."
+
+      - alert: ValidatorSlashed
+        expr: increase(rnr_consensus_validators_slashed_total[10m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Validator slashed"
+          description: "{{ $value }} validators slashed in last 10 minutes."
+
+      - alert: PoBDifficultyAnomalous
+        expr: abs(rnr_consensus_pob_difficulty_target - rnr_consensus_pob_rolling_avg) > 0.3
+        for: 20m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PoB difficulty anomalous"
+          description: "PoB difficulty deviated significantly from rolling average."
+
+  - name: rnr_node_health
+    interval: 1m
+    rules:
+      - alert: NodeUnhealthy
+        expr: up{job="rnr-node"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node is down"
+          description: "RNR node {{ $labels.instance }} is unreachable."
+
+      - alert: MetricsScrapeFailed
+        expr: up{job="rnr-node"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Metrics scrape failed"
+          description: "Unable to scrape metrics from {{ $labels.instance }}."
+
+      - alert: LongBlockTime
+        expr: (time() - rnr_blockchain_last_block_timestamp) > 120
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Block production delayed"
+          description: "Last block was {{ $value }}s ago, exceeding 120s threshold."
+
+      - alert: PoHSequenceStale
+        expr: (time() - rnr_poh_last_update_timestamp) > 30
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PoH sequence stale"
+          description: "PoH not updated in {{ $value }}s, exceeding 30s threshold."

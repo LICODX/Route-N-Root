@@ -1,0 +1,339 @@
+{
+  "dashboard": {
+    "title": "RNR Blockchain - Production Monitoring",
+    "tags": ["rnr", "blockchain", "mainnet"],
+    "timezone": "browser",
+    "editable": true,
+    "graphTooltip": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "Block Height & Chain Progress",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "rnr_blockchain_height",
+            "legendFormat": "Block Height",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(rnr_blockchain_height[5m])",
+            "legendFormat": "Block Production Rate",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"label": "Height", "format": "short"},
+          {"label": "Rate", "format": "short"}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Consensus Health",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "rnr_consensus_active_validators",
+            "legendFormat": "Active Validators"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area",
+          "reduceOptions": {
+            "calcs": ["lastNotNull"]
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 10},
+                {"color": "green", "value": 100}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Transaction Throughput (TPS)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+        "targets": [
+          {
+            "expr": "rate(rnr_blockchain_transactions_total[1m])",
+            "legendFormat": "TPS (1m avg)"
+          },
+          {
+            "expr": "rate(rnr_blockchain_transactions_total[5m])",
+            "legendFormat": "TPS (5m avg)"
+          }
+        ],
+        "yaxes": [
+          {"label": "Tx/sec", "format": "short"}
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Mempool Status",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "rnr_blockchain_mempool_size",
+            "legendFormat": "Mempool Size"
+          },
+          {
+            "expr": "rnr_blockchain_mempool_bytes",
+            "legendFormat": "Mempool Bytes"
+          }
+        ],
+        "yaxes": [
+          {"label": "Count", "format": "short"},
+          {"label": "Bytes", "format": "bytes"}
+        ]
+      },
+      {
+        "id": 5,
+        "title": "PoB Score Distribution",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "rnr_consensus_pob_score",
+            "legendFormat": "{{validator}}"
+          },
+          {
+            "expr": "avg(rnr_consensus_pob_score)",
+            "legendFormat": "Average PoB Score"
+          }
+        ],
+        "yaxes": [
+          {"label": "PoB Score", "format": "short", "min": 0, "max": 1}
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Network Bandwidth (MB/s)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "targets": [
+          {
+            "expr": "rate(rnr_network_bytes_sent[1m]) / 1024 / 1024",
+            "legendFormat": "Upload (MB/s)"
+          },
+          {
+            "expr": "rate(rnr_network_bytes_received[1m]) / 1024 / 1024",
+            "legendFormat": "Download (MB/s)"
+          }
+        ],
+        "yaxes": [
+          {"label": "MB/s", "format": "MBs"}
+        ]
+      },
+      {
+        "id": 7,
+        "title": "P2P Peers",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 16},
+        "targets": [
+          {
+            "expr": "rnr_p2p_peers_connected",
+            "legendFormat": "Connected Peers"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "area"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 3},
+                {"color": "green", "value": 10}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Security Events",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 16},
+        "targets": [
+          {
+            "expr": "increase(rnr_security_violations_total[5m])",
+            "legendFormat": "{{type}}",
+            "format": "table"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Fork Resolution Events",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+        "targets": [
+          {
+            "expr": "increase(rnr_consensus_fork_resolutions_total[1h])",
+            "legendFormat": "Fork Resolutions (1h)"
+          }
+        ],
+        "yaxes": [
+          {"label": "Count", "format": "short"}
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Validator Observer Queue",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+        "targets": [
+          {
+            "expr": "rnr_consensus_observer_validators",
+            "legendFormat": "Observers"
+          },
+          {
+            "expr": "rnr_consensus_pending_validators",
+            "legendFormat": "Pending Activation"
+          }
+        ],
+        "yaxes": [
+          {"label": "Count", "format": "short"}
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Database Performance",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32},
+        "targets": [
+          {
+            "expr": "rate(rnr_database_reads_total[1m])",
+            "legendFormat": "Reads/sec"
+          },
+          {
+            "expr": "rate(rnr_database_writes_total[1m])",
+            "legendFormat": "Writes/sec"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(rnr_database_operation_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95 Latency"
+          }
+        ],
+        "yaxes": [
+          {"label": "Ops/sec", "format": "ops"},
+          {"label": "Latency (s)", "format": "s"}
+        ]
+      },
+      {
+        "id": 12,
+        "title": "System Resources",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32},
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes / 1024 / 1024",
+            "legendFormat": "Memory (MB)"
+          },
+          {
+            "expr": "rate(process_cpu_seconds_total[1m]) * 100",
+            "legendFormat": "CPU %"
+          },
+          {
+            "expr": "go_goroutines",
+            "legendFormat": "Goroutines"
+          }
+        ],
+        "yaxes": [
+          {"label": "Value", "format": "short"}
+        ]
+      },
+      {
+        "id": 13,
+        "title": "IP Reputation Blacklist",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 40},
+        "targets": [
+          {
+            "expr": "rnr_security_blacklisted_ips",
+            "legendFormat": "Blacklisted IPs"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 10},
+                {"color": "red", "value": 50}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 14,
+        "title": "Byzantine Detections",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 40},
+        "targets": [
+          {
+            "expr": "increase(rnr_security_byzantine_detected_total[1h])",
+            "legendFormat": "Byzantine Attacks (1h)"
+          }
+        ],
+        "options": {
+          "colorMode": "background",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "orange", "value": 1},
+                {"color": "red", "value": 5}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 15,
+        "title": "PoB Difficulty Target",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 40},
+        "targets": [
+          {
+            "expr": "rnr_consensus_pob_difficulty_target",
+            "legendFormat": "Current Target"
+          },
+          {
+            "expr": "rnr_consensus_pob_rolling_avg",
+            "legendFormat": "50-block Rolling Avg"
+          }
+        ],
+        "yaxes": [
+          {"label": "PoB Score", "format": "short", "min": 0, "max": 1}
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "refresh": "10s"
+  }
+}
